@@ -2,26 +2,26 @@
   "context": {
     "session_id": "test_session",
     "agent_name": "test_agent",
-    "start_time": "2025-09-14T01:56:37.270379",
-    "last_activity": "2025-09-14T01:56:37.295428",
+    "start_time": "2025-09-14T02:02:27.335631",
+    "last_activity": "2025-09-14T02:02:27.360300",
     "message_count": 3,
     "context_data": {}
   },
   "history": [
     {
-      "timestamp": "2025-09-14T01:56:37.270387",
+      "timestamp": "2025-09-14T02:02:27.335644",
       "message_type": "system",
       "content": "Conversación iniciada con test_agent",
       "metadata": {}
     },
     {
-      "timestamp": "2025-09-14T01:56:37.284405",
+      "timestamp": "2025-09-14T02:02:27.348635",
       "message_type": "human",
       "content": "Hola",
       "metadata": {}
     },
     {
-      "timestamp": "2025-09-14T01:56:37.295422",
+      "timestamp": "2025-09-14T02:02:27.360294",
       "message_type": "ai",
       "content": "Hola, soy un agente",
       "metadata": {}

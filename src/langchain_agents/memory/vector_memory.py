@@ -7,6 +7,7 @@ from typing import Dict, List, Any, Optional, Union, Tuple
 from datetime import datetime
 from dataclasses import dataclass, field
 import json
+import os
 from pathlib import Path
 
 import chromadb
@@ -16,6 +17,7 @@ import numpy as np
 
 from utils.helpers import file_helper, json_helper
 from utils.logging import get_logger
+from utils.chromadb_singleton import chromadb_singleton
 
 logger = get_logger("vector-memory")
 
@@ -60,16 +62,10 @@ class VectorMemory:
         self.embedding_cache: Dict[str, List[float]] = {}
     
     def _setup_chromadb(self):
-        """Configurar ChromaDB"""
+        """Configurar ChromaDB usando singleton"""
         try:
-            # Configuración de ChromaDB
-            chroma_settings = Settings(
-                persist_directory=str(self.storage_path),
-                anonymized_telemetry=False
-            )
-            
-            # Cliente de ChromaDB
-            self.chroma_client = chromadb.Client(chroma_settings)
+            # Usar singleton para evitar conflictos
+            self.chroma_client = chromadb_singleton.get_client(self.agent_name, self.storage_path)
             
             # Obtener o crear colección
             try:

@@ -111,6 +111,22 @@ class JsonHelper:
             return json.loads(json_string)
         except Exception as e:
             raise Exception(f"Error al parsear JSON: {e}")
+    
+    @staticmethod
+    def dumps(data: Any, indent: int = 2) -> str:
+        """Convertir objeto a string JSON"""
+        try:
+            return json.dumps(data, indent=indent, ensure_ascii=False)
+        except Exception as e:
+            raise Exception(f"Error al convertir a JSON: {e}")
+    
+    @staticmethod
+    def loads(json_string: str) -> Any:
+        """Convertir string JSON a objeto"""
+        try:
+            return json.loads(json_string)
+        except Exception as e:
+            raise Exception(f"Error al convertir desde JSON: {e}")
 
 
 class YamlHelper:

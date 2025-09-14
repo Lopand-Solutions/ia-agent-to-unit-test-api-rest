@@ -8,8 +8,17 @@ from datetime import datetime
 import asyncio
 import json
 
-from autogen import ConversableAgent, GroupChat, GroupChatManager
-from autogen.agentchat.contrib.multimodal_conversable_agent import MultimodalConversableAgent
+try:
+    from autogen import ConversableAgent, GroupChat, GroupChatManager
+    from autogen.agentchat.contrib.multimodal_conversable_agent import MultimodalConversableAgent
+    AUTOGEN_AVAILABLE = True
+except ImportError:
+    # Fallback para cuando AutoGen no esté disponible
+    AUTOGEN_AVAILABLE = False
+    ConversableAgent = None
+    GroupChat = None
+    GroupChatManager = None
+    MultimodalConversableAgent = None
 
 from agents.analysis_agent import analysis_agent
 from agents.generation_agent import generation_agent
@@ -27,6 +36,9 @@ class AutoGenAgentWrapper:
     """Wrapper para adaptar nuestros agentes a AutoGen"""
     
     def __init__(self, agent_instance, agent_name: str):
+        if not AUTOGEN_AVAILABLE:
+            raise ImportError("AutoGen no está disponible. Instala pyautogen para usar esta funcionalidad.")
+        
         self.agent_instance = agent_instance
         self.agent_name = agent_name
         self.logger = get_logger(f"autogen-wrapper-{agent_name}")
