@@ -20,7 +20,7 @@ from agents.validation_agent import validation_agent
 from agents.optimization_agent import optimization_agent
 from agents.coordinator_agent import coordinator_agent
 from tools.file_tools import file_manager
-from tools.dotnet_tools import dotnet_manager
+from tools.dotnet_tools import dotnet_manager, project_discovery, ProjectInfo, ProjectType
 from utils.config import get_config
 from utils.logging import get_logger, setup_logging
 
@@ -76,14 +76,16 @@ Comandos disponibles:
 3. validate <archivo> - Validar código y pruebas
 4. optimize <archivo> - Optimizar código
 5. project <ruta> - Establecer proyecto actual
-6. status - Mostrar estado del sistema
-7. help - Mostrar esta ayuda
-8. exit - Salir del sistema
+6. discover - Descubrir y seleccionar proyectos .NET
+7. status - Mostrar estado del sistema
+8. help - Mostrar esta ayuda
+9. exit - Salir del sistema
 
 Ejemplos:
 - analyze Calculator.cs
 - generate Calculator.cs
 - project ./mi_proyecto
+- discover
 - status
         """
         
@@ -111,6 +113,94 @@ Configuración:
         """
         
         self.console.print(Panel(status_text, title="Estado del Sistema", border_style="yellow"))
+    
+    def discover_and_select_project(self, root_path: str = "."):
+        """Descubrir y seleccionar proyecto .NET"""
+        try:
+            self.console.print(f"🔍 Descubriendo proyectos .NET en: {os.path.abspath(root_path)}")
+            
+            # Descubrir proyectos
+            projects = project_discovery.discover_projects(root_path)
+            
+            if not projects:
+                self.console.print("❌ No se encontraron proyectos .NET en el directorio actual")
+                self.console.print("💡 Asegúrate de estar en un directorio que contenga archivos .csproj o .sln")
+                return False
+            
+            # Mostrar proyectos encontrados
+            self._display_projects(projects)
+            
+            # Permitir selección
+            selected_project = self._select_project(projects)
+            
+            if selected_project:
+                self.set_project(selected_project.path)
+                return True
+            else:
+                self.console.print("❌ No se seleccionó ningún proyecto")
+                return False
+                
+        except Exception as e:
+            self.console.print(f"❌ Error al descubrir proyectos: {e}")
+            return False
+    
+    def _display_projects(self, projects: List[ProjectInfo]):
+        """Mostrar lista de proyectos encontrados"""
+        from rich.table import Table
+        
+        table = Table(title="📁 Proyectos .NET Encontrados")
+        table.add_column("ID", style="cyan", no_wrap=True)
+        table.add_column("Nombre", style="magenta")
+        table.add_column("Tipo", style="green")
+        table.add_column("Framework", style="blue")
+        table.add_column("Ruta", style="white")
+        
+        for i, project in enumerate(projects, 1):
+            # Determinar emoji según tipo
+            type_emoji = {
+                ProjectType.WEB_API: "🌐",
+                ProjectType.CONSOLE: "💻",
+                ProjectType.CLASS_LIBRARY: "📚",
+                ProjectType.TEST: "🧪",
+                ProjectType.UNKNOWN: "❓"
+            }.get(project.project_type, "❓")
+            
+            table.add_row(
+                str(i),
+                f"{type_emoji} {project.name}",
+                project.project_type.value,
+                project.target_framework,
+                project.path
+            )
+        
+        self.console.print(table)
+    
+    def _select_project(self, projects: List[ProjectInfo]) -> Optional[ProjectInfo]:
+        """Permitir al usuario seleccionar un proyecto"""
+        try:
+            while True:
+                choice = Prompt.ask(
+                    f"\n🎯 Selecciona un proyecto (1-{len(projects)}) o 'q' para salir",
+                    default="1"
+                )
+                
+                if choice.lower() == 'q':
+                    return None
+                
+                try:
+                    index = int(choice) - 1
+                    if 0 <= index < len(projects):
+                        selected = projects[index]
+                        self.console.print(f"✅ Proyecto seleccionado: {selected.name}")
+                        return selected
+                    else:
+                        self.console.print(f"❌ Opción inválida. Selecciona entre 1 y {len(projects)}")
+                except ValueError:
+                    self.console.print("❌ Por favor ingresa un número válido")
+                    
+        except KeyboardInterrupt:
+            self.console.print("\n❌ Selección cancelada")
+            return None
     
     def set_project(self, project_path: str):
         """Establecer proyecto actual"""
@@ -259,6 +349,9 @@ Configuración:
                     project_path = command[8:].strip()
                     self.set_project(project_path)
                 
+                elif command.lower() == 'discover':
+                    self.discover_and_select_project()
+                
                 elif command.startswith('analyze '):
                     file_path = command[8:].strip()
                     self.analyze_file(file_path)
@@ -286,10 +379,14 @@ Configuración:
 
 
 @click.command()
-@click.option('--project-path', '-p', help='Ruta del proyecto .NET')
+@click.option('--project-path', '-p', help='Ruta del proyecto .NET (opcional)')
 @click.option('--log-level', '-l', default='INFO', help='Nivel de logging')
 def main(project_path: Optional[str], log_level: str):
-    """IA Agent para Generación de Pruebas Unitarias .NET - CLI Simplificado"""
+    """IA Agent para Generación de Pruebas Unitarias .NET - CLI Simplificado
+    
+    Si no se especifica --project-path, el agente descubrirá automáticamente
+    los proyectos .NET en el directorio actual y permitirá seleccionar uno.
+    """
     
     # Configurar logging
     setup_logging(log_level)
@@ -297,9 +394,14 @@ def main(project_path: Optional[str], log_level: str):
     # Crear CLI
     cli = SimpleCLI()
     
-    # Establecer proyecto si se proporciona
+    # Establecer proyecto
     if project_path:
+        # Usar proyecto especificado
         cli.set_project(project_path)
+    else:
+        # Descubrir y seleccionar proyecto automáticamente
+        if not cli.discover_and_select_project():
+            return  # Salir si no se seleccionó proyecto
     
     # Ejecutar CLI interactivo
     cli.run_interactive()

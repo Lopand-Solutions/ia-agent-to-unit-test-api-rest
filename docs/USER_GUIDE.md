@@ -15,30 +15,32 @@ El **IA Agent** es un sistema inteligente que automatiza la generación de prueb
 
 ### Instalación
 
+1. **Instalar desde PyPI (RECOMENDADO):**
+```bash
+pip install ia-agent-dotnet
+```
+
+2. **Configurar API key (una sola vez):**
+```bash
+ia-agent-config
+```
+
+3. **¡Listo para usar!**
+```bash
+ia-agent
+```
+
+### Instalación para Desarrollo
+
 1. **Clonar el repositorio:**
 ```bash
-git clone <repository-url>
-cd ia-agent-to-unit-tes-api-rest
+git clone https://github.com/Lopand-Solutions/ia-agent-to-unit-test-api-rest.git
+cd ia-agent-to-unit-test-api-rest
 ```
 
-2. **Instalar dependencias:**
+2. **Instalar en modo desarrollo:**
 ```bash
-pip install -r requirements.txt
-```
-
-3. **Configurar API key:**
-```bash
-# Opción 1: Configuración interactiva (RECOMENDADO)
-ia-agent config
-
-# Opción 2: Configuración manual
-cp env.example .env
-# Editar .env con tu API key
-```
-
-4. **Verificar instalación:**
-```bash
-python validate_production.py
+pip install -e .
 ```
 
 ## 🖥️ Uso del Sistema
@@ -47,7 +49,11 @@ python validate_production.py
 
 #### Iniciar el CLI
 ```bash
-python -c "import sys; sys.path.insert(0, 'src'); from cli.simple_cli import SimpleCLI; cli = SimpleCLI(); cli.run_interactive()"
+# Descubrir y analizar proyectos automáticamente (NUEVO)
+ia-agent
+
+# O especificar un proyecto específico
+ia-agent --project-path ./mi-proyecto
 ```
 
 #### Comandos Disponibles
@@ -63,22 +69,46 @@ python -c "import sys; sys.path.insert(0, 'src'); from cli.simple_cli import Sim
 | `optimize <archivo>` | Optimizar código | `optimize Calculator.cs` |
 | `exit` | Salir del sistema | `exit` |
 
+### 🔍 Descubrimiento Automático de Proyectos (NUEVO)
+
+El agente ahora detecta automáticamente todos los proyectos .NET en el directorio actual:
+
+```bash
+# Navega a tu directorio de proyecto
+cd ./mi-proyecto-dotnet
+
+# Ejecuta el agente (descubre automáticamente)
+ia-agent
+```
+
+**El agente mostrará una tabla como esta:**
+```
+📁 Proyectos .NET Encontrados
+┌────┬─────────────────┬─────────────┬──────────┬─────────────────────┐
+│ ID │ Nombre          │ Tipo        │ Framework│ Ruta                │
+├────┼─────────────────┼─────────────┼──────────┼─────────────────────┤
+│ 1  │ 🌐 MyWebApi     │ web-api     │ net8.0   │ ./src/MyWebApi      │
+│ 2  │ 📚 MyLibrary    │ class-lib   │ net8.0   │ ./src/MyLibrary     │
+│ 3  │ 🧪 MyTests      │ test        │ net8.0   │ ./tests/MyTests     │
+└────┴─────────────────┴─────────────┴──────────┴─────────────────────┘
+
+🎯 Selecciona un proyecto (1-3) o 'q' para salir: 1
+✅ Proyecto seleccionado: MyWebApi
+```
+
 ### Ejemplo de Uso Completo
 
 ```bash
-# 1. Iniciar el sistema
-python validate_production.py
+# 1. Descubrir y seleccionar proyecto automáticamente
+ia-agent
 
-# 2. Establecer proyecto
-project ./mi_proyecto_dotnet
-
-# 3. Analizar archivo
+# 2. Analizar archivo
 analyze src/Calculator.cs
 
-# 4. Generar pruebas
+# 3. Generar pruebas
 generate src/Calculator.cs
 
-# 5. Validar resultados
+# 4. Validar resultados
 validate tests/CalculatorTests.cs
 ```
 

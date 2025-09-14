@@ -13,14 +13,30 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 - Soporte para más frameworks de pruebas (.NET Core, .NET Framework)
 - Análisis de código más avanzado con IA
 
+## [0.7.0] - 2025-09-14
+
+### Added
+- **🔍 Descubrimiento automático de proyectos .NET** - El agente detecta automáticamente todos los proyectos .NET en el directorio actual
+- **🎯 Selección interactiva de proyectos** - Interfaz amigable para seleccionar entre múltiples proyectos encontrados
+- **📊 Análisis detallado de proyectos** - Información completa sobre tipo, framework, paquetes y archivos fuente
+- **🌐 Soporte para archivos .sln** - Análisis de soluciones de Visual Studio
+- **📋 Tabla visual de proyectos** - Presentación clara de proyectos encontrados con emojis y colores
+
 ### Changed
-- **DeepSeek como proveedor por defecto** - Cambio de OpenAI a DeepSeek
-- Mejoras en el rendimiento del sistema de memoria
-- Optimización de la generación de pruebas
-- Configuración optimizada para generación de código
+- **Comando `ia-agent` mejorado** - Ya no requiere especificar `--project-path`, descubre automáticamente
+- **Flujo de trabajo simplificado** - Un solo comando para descubrir, seleccionar y analizar
+- **Interfaz más intuitiva** - Selección numérica simple y clara
+- **Documentación actualizada** - Guías actualizadas para reflejar el nuevo flujo
 
 ### Fixed
-- Corrección de bugs menores en el CLI
+- Mejoras en la detección de tipos de proyecto
+- Corrección de problemas de codificación en archivos .csproj
+- Optimización del análisis de archivos de solución
+
+### Technical
+- Nueva clase `DotNetProjectDiscovery` para descubrimiento de proyectos
+- Métodos `discover_and_select_project()` y `_display_projects()` en CLI
+- Soporte mejorado para múltiples tipos de proyecto (.csproj y .sln)
 
 ## [0.5.2] - 2025-09-14
 

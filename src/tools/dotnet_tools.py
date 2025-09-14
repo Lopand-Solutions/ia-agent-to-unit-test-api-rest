@@ -62,6 +62,175 @@ class MethodInfo:
     route: Optional[str] = None
 
 
+class DotNetProjectDiscovery:
+    """Descubridor de proyectos .NET"""
+    
+    def __init__(self):
+        self.logger = logger
+    
+    def discover_projects(self, root_path: str) -> List[ProjectInfo]:
+        """Descubrir todos los proyectos .NET en un directorio"""
+        projects = []
+        root = Path(root_path)
+        
+        if not root.exists():
+            self.logger.error(f"Directorio no existe: {root_path}")
+            return projects
+        
+        self.logger.info(f"Descubriendo proyectos .NET en: {root_path}")
+        
+        # Buscar archivos .csproj
+        for csproj_file in root.rglob("*.csproj"):
+            try:
+                project_info = self._analyze_project_file(csproj_file)
+                if project_info:
+                    projects.append(project_info)
+            except Exception as e:
+                self.logger.warning(f"Error al analizar proyecto {csproj_file}: {e}")
+        
+        # Buscar archivos .sln y extraer proyectos
+        for sln_file in root.rglob("*.sln"):
+            try:
+                solution_projects = self._analyze_solution_file(sln_file)
+                # Agregar solo proyectos que no estén ya en la lista
+                for proj in solution_projects:
+                    if not any(p.path == proj.path for p in projects):
+                        projects.append(proj)
+            except Exception as e:
+                self.logger.warning(f"Error al analizar solución {sln_file}: {e}")
+        
+        self.logger.info(f"Encontrados {len(projects)} proyectos .NET")
+        return projects
+    
+    def _analyze_project_file(self, csproj_path: Path) -> Optional[ProjectInfo]:
+        """Analizar un archivo .csproj individual"""
+        try:
+            # Leer contenido del archivo
+            content = csproj_path.read_text(encoding='utf-8')
+            
+            # Extraer información básica
+            name = csproj_path.stem
+            target_framework = self._extract_target_framework(content)
+            project_type = self._determine_project_type(content)
+            
+            # Buscar archivos fuente
+            source_files = self._find_source_files(csproj_path.parent)
+            
+            # Determinar framework de pruebas
+            test_framework = self._detect_test_framework(content)
+            
+            return ProjectInfo(
+                name=name,
+                path=str(csproj_path.parent),
+                target_framework=target_framework,
+                project_type=project_type,
+                packages=self._extract_packages(content),
+                references=self._extract_references(content),
+                source_files=source_files,
+                test_framework=test_framework
+            )
+            
+        except Exception as e:
+            self.logger.error(f"Error al analizar {csproj_path}: {e}")
+            return None
+    
+    def _analyze_solution_file(self, sln_path: Path) -> List[ProjectInfo]:
+        """Analizar un archivo .sln y extraer proyectos"""
+        projects = []
+        try:
+            content = sln_path.read_text(encoding='utf-8')
+            
+            # Buscar referencias a proyectos en el archivo .sln
+            project_pattern = r'Project\("([^"]+)"\)\s*=\s*"([^"]+)",\s*"([^"]+)",\s*"([^"]+)"'
+            matches = re.findall(project_pattern, content)
+            
+            for match in matches:
+                project_path = Path(sln_path.parent) / match[2]
+                if project_path.exists() and project_path.suffix == '.csproj':
+                    project_info = self._analyze_project_file(project_path)
+                    if project_info:
+                        projects.append(project_info)
+                        
+        except Exception as e:
+            self.logger.error(f"Error al analizar solución {sln_path}: {e}")
+        
+        return projects
+    
+    def _extract_target_framework(self, content: str) -> str:
+        """Extraer el framework objetivo del proyecto"""
+        patterns = [
+            r'<TargetFramework>([^<]+)</TargetFramework>',
+            r'<TargetFrameworks>([^<]+)</TargetFrameworks>'
+        ]
+        
+        for pattern in patterns:
+            match = re.search(pattern, content)
+            if match:
+                return match.group(1).split(';')[0]  # Tomar el primero si hay múltiples
+        
+        return "Unknown"
+    
+    def _determine_project_type(self, content: str) -> ProjectType:
+        """Determinar el tipo de proyecto basado en el contenido"""
+        if 'Microsoft.AspNetCore.App' in content or 'Microsoft.AspNetCore.All' in content:
+            return ProjectType.WEB_API
+        elif 'Microsoft.NET.Test.Sdk' in content or 'xunit' in content or 'nunit' in content or 'mstest' in content:
+            return ProjectType.TEST
+        elif 'Microsoft.NET.Sdk' in content and 'Exe' in content:
+            return ProjectType.CONSOLE
+        elif 'Microsoft.NET.Sdk' in content:
+            return ProjectType.CLASS_LIBRARY
+        else:
+            return ProjectType.UNKNOWN
+    
+    def _find_source_files(self, project_dir: Path) -> List[str]:
+        """Encontrar archivos fuente en el directorio del proyecto"""
+        source_files = []
+        for pattern in ['*.cs', '*.csproj']:
+            for file_path in project_dir.rglob(pattern):
+                if file_path.is_file():
+                    source_files.append(str(file_path.relative_to(project_dir)))
+        return source_files
+    
+    def _detect_test_framework(self, content: str) -> Optional[str]:
+        """Detectar el framework de pruebas utilizado"""
+        if 'xunit' in content.lower():
+            return 'xUnit'
+        elif 'nunit' in content.lower():
+            return 'NUnit'
+        elif 'mstest' in content.lower() or 'Microsoft.NET.Test.Sdk' in content:
+            return 'MSTest'
+        return None
+    
+    def _extract_packages(self, content: str) -> List[Dict[str, str]]:
+        """Extraer paquetes NuGet del proyecto"""
+        packages = []
+        pattern = r'<PackageReference\s+Include="([^"]+)"\s+Version="([^"]+)"'
+        matches = re.findall(pattern, content)
+        
+        for match in matches:
+            packages.append({
+                'name': match[0],
+                'version': match[1]
+            })
+        
+        return packages
+    
+    def _extract_references(self, content: str) -> List[Dict[str, str]]:
+        """Extraer referencias de proyecto"""
+        references = []
+        pattern = r'<ProjectReference\s+Include="([^"]+)"'
+        matches = re.findall(pattern, content)
+        
+        for match in matches:
+            references.append({
+                'path': match,
+                'name': Path(match).stem
+            })
+        
+        return references
+
+
 class DotNetProjectAnalyzer:
     """Analizador de proyectos .NET"""
     
@@ -421,5 +590,6 @@ class DotNetManager:
         """Ejecutar pruebas"""
         return self.command_executor.run_tests(project_path)
 
-# Instancia global del manager
+# Instancias globales
 dotnet_manager = DotNetManager()
+project_discovery = DotNetProjectDiscovery()

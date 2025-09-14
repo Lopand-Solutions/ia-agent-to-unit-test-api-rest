@@ -24,7 +24,7 @@ if requirements_path.exists():
 
 setup(
     name="ia-agent-dotnet",
-    version="0.6.0",
+    version="0.7.0",
     author="Paulo Andrade",
     author_email="paulo_866@hotmail.com",
     description="IA Agent para Generación de Pruebas Unitarias .NET - Sistema multi-agente inteligente",

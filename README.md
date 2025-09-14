@@ -16,13 +16,15 @@ pip install ia-agent-dotnet
 # Configurar el agente (una sola vez)
 ia-agent-config
 
-# ¡Listo para usar!
-ia-agent --help
+# ¡Listo para usar! (Descubre proyectos automáticamente)
+ia-agent
 ```
 
 ## 🚀 Características Principales
 
 - **🤖 Sistema Multi-Agente**: Colaboración inteligente entre agentes especializados
+- **🔍 Descubrimiento Automático**: Detecta proyectos .NET automáticamente en el directorio actual
+- **🎯 Selección Interactiva**: Interfaz amigable para seleccionar proyectos
 - **🧠 Memoria Persistente**: Recuerda conversaciones y contexto entre sesiones
 - **🛠️ Herramientas Externas**: Ejecuta código y busca documentación automáticamente
 - **🔄 Patrón ReAct**: Razonamiento y actuación iterativa para decisiones autónomas
@@ -62,10 +64,13 @@ ia-agent-config --status
 
 ### Comandos Principales
 ```bash
+# Descubrir y analizar proyectos automáticamente (NUEVO)
+ia-agent
+
 # Ver ayuda del agente
 ia-agent --help
 
-# Analizar un proyecto .NET
+# Analizar un proyecto específico (opcional)
 ia-agent --project-path ./mi-proyecto
 
 # Configurar el agente
@@ -77,15 +82,34 @@ ia-agent-config --status
 
 ### Ejemplos de Uso
 ```bash
-# Analizar proyecto actual
-ia-agent --project-path .
+# Descubrir proyectos en directorio actual (RECOMENDADO)
+ia-agent
 
 # Analizar proyecto específico
 ia-agent --project-path ./src/MyProject
 
 # Ver logs detallados
-ia-agent --project-path ./mi-proyecto --log-level DEBUG
+ia-agent --log-level DEBUG
 ```
+
+### 🔍 Descubrimiento Automático de Proyectos
+
+El agente ahora detecta automáticamente todos los proyectos .NET en el directorio actual:
+
+```bash
+# Navega a tu directorio de proyecto
+cd ./mi-proyecto-dotnet
+
+# Ejecuta el agente (descubre automáticamente)
+ia-agent
+```
+
+**El agente mostrará:**
+- 📁 Lista de proyectos .NET encontrados
+- 🎯 Tipo de proyecto (Web API, Console, Library, Test)
+- 🔧 Framework objetivo (.NET 8.0, etc.)
+- 📦 Paquetes NuGet utilizados
+- 🎯 Opción de selección interactiva
 
 ## 📋 Requisitos del Sistema
 
@@ -173,9 +197,10 @@ pip install -e .
 - [x] Changelog del proyecto
 - [x] Licencia MIT
 
-### 🎯 Versión Actual: v0.6.0
+### 🎯 Versión Actual: v0.7.0
 - **Estado**: ✅ **DISPONIBLE EN PyPI**
-- **Funcionalidades**: Sistema multi-agente con configuración global
+- **Funcionalidades**: Sistema multi-agente con descubrimiento automático de proyectos
+- **Nuevo**: 🔍 Descubrimiento automático y selección interactiva de proyectos .NET
 - **Configuración**: Global y automática (sin archivos .env)
 - **Proveedores**: DeepSeek, Gemini, OpenAI
 - **Documentación**: Guías completas y API reference
