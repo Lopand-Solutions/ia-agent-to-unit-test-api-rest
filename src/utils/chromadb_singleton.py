@@ -5,6 +5,7 @@ IA Agent para Generación de Pruebas Unitarias .NET
 
 import os
 import threading
+import uuid
 from typing import Optional, Dict, Any
 from pathlib import Path
 
@@ -32,9 +33,7 @@ class ChromaDBSingleton:
     
     def __init__(self):
         if not self._initialized:
-            self._client: Optional[chromadb.Client] = None
-            self._settings: Optional[Settings] = None
-            self._base_path: Optional[Path] = None
+            self._clients: Dict[str, chromadb.Client] = {}
             self._initialized = True
     
     def get_client(self, agent_name: str, base_path: Optional[Path] = None) -> chromadb.Client:
@@ -42,15 +41,18 @@ class ChromaDBSingleton:
         if base_path is None:
             base_path = Path("./memory/vector")
         
-        # Crear path único para el agente
-        agent_path = base_path / f"agent_{agent_name}"
-        agent_path.mkdir(parents=True, exist_ok=True)
+        # Crear identificador único para el agente
+        client_key = f"{agent_name}_{uuid.uuid4().hex[:8]}"
         
-        # Si ya tenemos un cliente con la misma configuración, reutilizarlo
-        if self._client is not None and self._base_path == agent_path:
-            return self._client
+        # Si ya tenemos un cliente para este agente, reutilizarlo
+        if client_key in self._clients:
+            return self._clients[client_key]
         
         try:
+            # Crear path único para el agente
+            agent_path = base_path / f"agent_{agent_name}_{uuid.uuid4().hex[:8]}"
+            agent_path.mkdir(parents=True, exist_ok=True)
+            
             # Configuración única para el agente
             settings = Settings(
                 persist_directory=str(agent_path),
@@ -58,23 +60,29 @@ class ChromaDBSingleton:
             )
             
             # Crear nuevo cliente
-            self._client = chromadb.Client(settings)
-            self._settings = settings
-            self._base_path = agent_path
+            client = chromadb.Client(settings)
+            self._clients[client_key] = client
             
             logger.info(f"Cliente ChromaDB creado para agente: {agent_name}")
-            return self._client
+            return client
             
         except Exception as e:
-            logger.error(f"Error al crear cliente ChromaDB para {agent_name}: {e}")
-            raise
+            logger.warning(f"Error al crear cliente ChromaDB para {agent_name}: {e}")
+            # Fallback: usar cliente en memoria sin persistencia
+            try:
+                client = chromadb.Client()
+                self._clients[client_key] = client
+                logger.warning(f"Usando cliente ChromaDB en memoria para {agent_name}")
+                return client
+            except Exception as e2:
+                logger.error(f"Error crítico al crear cliente en memoria: {e2}")
+                # Último recurso: retornar None y manejar en el código que lo usa
+                return None
     
     def reset(self):
         """Resetear el singleton (para pruebas)"""
         with self._lock:
-            self._client = None
-            self._settings = None
-            self._base_path = None
+            self._clients.clear()
 
 
 # Instancia global

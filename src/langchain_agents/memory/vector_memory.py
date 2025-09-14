@@ -67,6 +67,12 @@ class VectorMemory:
             # Usar singleton para evitar conflictos
             self.chroma_client = chromadb_singleton.get_client(self.agent_name, self.storage_path)
             
+            # Si el cliente es None, usar modo sin persistencia
+            if self.chroma_client is None:
+                self.logger.warning("ChromaDB no disponible, usando modo sin persistencia")
+                self.collection = None
+                return
+            
             # Obtener o crear colección
             try:
                 self.collection = self.chroma_client.get_collection(self.collection_name)
@@ -80,7 +86,9 @@ class VectorMemory:
             
         except Exception as e:
             self.logger.error(f"Error al configurar ChromaDB: {e}")
-            raise
+            self.logger.warning("Usando modo sin persistencia")
+            self.chroma_client = None
+            self.collection = None
     
     def add_entry(self, content: str, metadata: Optional[Dict[str, Any]] = None, 
                   entry_id: Optional[str] = None) -> str:
@@ -101,13 +109,14 @@ class VectorMemory:
                 embedding=embedding
             )
             
-            # Agregar a ChromaDB
-            self.collection.add(
-                ids=[entry_id],
-                documents=[content],
-                embeddings=[embedding],
-                metadatas=[metadata or {}]
-            )
+            # Agregar a ChromaDB si está disponible
+            if self.collection is not None:
+                self.collection.add(
+                    ids=[entry_id],
+                    documents=[content],
+                    embeddings=[embedding],
+                    metadatas=[metadata or {}]
+                )
             
             # Agregar al cache
             self.embedding_cache[entry_id] = embedding
@@ -123,6 +132,11 @@ class VectorMemory:
                similarity_threshold: float = 0.7) -> List[SearchResult]:
         """Buscar entradas similares"""
         try:
+            # Si no hay colección disponible, retornar lista vacía
+            if self.collection is None:
+                self.logger.warning("ChromaDB no disponible, búsqueda no posible")
+                return []
+            
             # Generar embedding de la consulta
             query_embedding = self._generate_embedding(query)
             

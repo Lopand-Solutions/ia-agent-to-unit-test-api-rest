@@ -66,14 +66,16 @@ class SharedMemory:
     def _setup_chromadb(self):
         """Configurar ChromaDB para memoria compartida"""
         try:
-            # Configuración de ChromaDB
-            chroma_settings = Settings(
-                persist_directory=str(self.storage_path / "vector"),
-                anonymized_telemetry=False
-            )
+            # Usar singleton para evitar conflictos
+            from utils.chromadb_singleton import chromadb_singleton
             
-            # Cliente de ChromaDB
-            self.chroma_client = chromadb.Client(chroma_settings)
+            self.chroma_client = chromadb_singleton.get_client("shared_memory", self.storage_path)
+            
+            # Si el cliente es None, usar modo sin persistencia
+            if self.chroma_client is None:
+                self.logger.warning("ChromaDB no disponible para memoria compartida, usando modo sin persistencia")
+                self.collections = {}
+                return
             
             # Colecciones para diferentes tipos de memoria
             self.collections = {}

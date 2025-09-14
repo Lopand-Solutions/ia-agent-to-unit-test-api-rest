@@ -383,3 +383,31 @@ class DotNetCommandExecutor:
 project_analyzer = DotNetProjectAnalyzer()
 controller_analyzer = DotNetControllerAnalyzer()
 command_executor = DotNetCommandExecutor()
+
+# Manager principal de .NET
+class DotNetManager:
+    """Manager principal para operaciones .NET"""
+    
+    def __init__(self):
+        self.project_analyzer = project_analyzer
+        self.controller_analyzer = controller_analyzer
+        self.command_executor = command_executor
+    
+    def get_dotnet_version(self) -> str:
+        """Obtener versión de .NET"""
+        return self.command_executor.get_dotnet_version()
+    
+    def get_project_info(self, project_path: str) -> Dict[str, Any]:
+        """Obtener información del proyecto"""
+        return self.project_analyzer.analyze_project(project_path)
+    
+    def build_project(self, project_path: str) -> Dict[str, Any]:
+        """Compilar proyecto"""
+        return self.command_executor.build_project(project_path)
+    
+    def run_tests(self, project_path: str) -> Dict[str, Any]:
+        """Ejecutar pruebas"""
+        return self.command_executor.run_tests(project_path)
+
+# Instancia global del manager
+dotnet_manager = DotNetManager()
