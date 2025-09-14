@@ -357,6 +357,18 @@ class DotNetCommandExecutor:
                 'return_code': -1
             }
     
+    def get_dotnet_version(self) -> str:
+        """Obtener versión de .NET"""
+        try:
+            result = self.execute_command(['--version'])
+            if result['success']:
+                return result['stdout'].strip()
+            else:
+                return "Versión no disponible"
+        except Exception as e:
+            self.logger.error(f"Error al obtener versión de .NET: {e}")
+            return "Error al obtener versión"
+    
     def build_project(self, project_path: str) -> Dict[str, Any]:
         """Compilar proyecto"""
         return self.execute_command(['build'], project_path)
