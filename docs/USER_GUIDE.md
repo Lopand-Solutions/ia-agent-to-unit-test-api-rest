@@ -11,7 +11,7 @@ El **IA Agent** es un sistema inteligente que automatiza la generación de prueb
 - **Python 3.11+**
 - **.NET 8.0+**
 - **Docker** (opcional, para despliegue)
-- **API Key de OpenAI** (para funcionalidad completa)
+- **API Key de DeepSeek** (recomendado) o **OpenAI** (alternativa)
 
 ### Instalación
 
@@ -29,7 +29,8 @@ pip install -r requirements.txt
 3. **Configurar variables de entorno:**
 ```bash
 cp env.example .env
-# Editar .env con tu configuración
+# Editar .env con tu API key de DeepSeek
+DEEPSEEK_API_KEY=tu_api_key_aqui
 ```
 
 4. **Verificar instalación:**
@@ -142,32 +143,48 @@ El sistema busca archivos de configuración en este orden:
 2. Archivo `.env`
 3. Valores por defecto
 
-### Configuración para DeepSeek
+### Configuración por Defecto (DeepSeek)
 
-Para usar DeepSeek en lugar de OpenAI:
+El sistema está configurado para usar **DeepSeek** por defecto:
 
 ```bash
-# Configurar variables de entorno
-export DEEPSEEK_API_KEY="tu_api_key_aqui"
-export AI_PROVIDER="deepseek"
-export AI_MODEL="deepseek-coder"
-
-# O usar archivo .env
-DEEPSEEK_API_KEY=tu_api_key_aqui
+# Configuración automática (ya incluida)
 AI_PROVIDER=deepseek
 AI_MODEL=deepseek-coder
+AI_TEMPERATURE=0.1
+AI_MAX_TOKENS=4000
+
+# Solo necesitas configurar tu API key
+DEEPSEEK_API_KEY=tu_api_key_aqui
 ```
 
-**Ventajas de DeepSeek:**
+**Ventajas de DeepSeek (Proveedor por Defecto):**
 - ✅ Más económico que OpenAI GPT-4
 - ✅ Especializado en programación
 - ✅ Respuestas rápidas
 - ✅ API compatible con OpenAI
+- ✅ Optimizado para generación de código
 
 **Modelos disponibles:**
 - `deepseek-chat`: Modelo general de chat
-- `deepseek-coder`: Especializado en programación (recomendado)
+- `deepseek-coder`: Especializado en programación (por defecto)
 - `deepseek-math`: Especializado en matemáticas
+
+### Configuración Alternativa (OpenAI)
+
+Para usar OpenAI en lugar de DeepSeek:
+
+```bash
+# Configurar variables de entorno
+export OPENAI_API_KEY="tu_api_key_aqui"
+export AI_PROVIDER="openai"
+export AI_MODEL="gpt-4"
+
+# O usar archivo .env
+OPENAI_API_KEY=tu_api_key_aqui
+AI_PROVIDER=openai
+AI_MODEL=gpt-4
+```
 
 ## 📁 Estructura de Proyectos
 

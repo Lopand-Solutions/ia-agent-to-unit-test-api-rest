@@ -14,11 +14,33 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 - Análisis de código más avanzado con IA
 
 ### Changed
+- **DeepSeek como proveedor por defecto** - Cambio de OpenAI a DeepSeek
 - Mejoras en el rendimiento del sistema de memoria
 - Optimización de la generación de pruebas
+- Configuración optimizada para generación de código
 
 ### Fixed
 - Corrección de bugs menores en el CLI
+
+## [0.5.2] - 2025-09-14
+
+### Changed
+- **DeepSeek como proveedor por defecto** - Cambio de OpenAI a DeepSeek
+- **Configuración optimizada** para generación de código
+- **Modelo por defecto**: `deepseek-coder` (especializado en programación)
+- **Parámetros optimizados**: temperature=0.1, max_tokens=4000
+
+### Updated
+- **Documentación actualizada** para reflejar DeepSeek como predeterminado
+- **Guías de configuración** actualizadas
+- **README** con instrucciones de DeepSeek
+- **Troubleshooting** con DeepSeek como solución principal
+
+### Benefits
+- **Más económico** que OpenAI GPT-4
+- **Especializado en programación** para mejor generación de código
+- **Respuestas más rápidas** y eficientes
+- **API compatible** con OpenAI para fácil migración
 
 ## [0.4.0] - 2025-09-14
 

@@ -18,10 +18,10 @@ class EnvironmentConfig(BaseSettings):
     # Configuración de IA
     openai_api_key: Optional[str] = Field(None, env="OPENAI_API_KEY")
     deepseek_api_key: Optional[str] = Field(None, env="DEEPSEEK_API_KEY")
-    ai_provider: str = Field("openai", env="AI_PROVIDER")
-    ai_model: str = Field("gpt-4", env="AI_MODEL")
-    ai_temperature: float = Field(0.7, env="AI_TEMPERATURE")
-    ai_max_tokens: int = Field(2000, env="AI_MAX_TOKENS")
+    ai_provider: str = Field("deepseek", env="AI_PROVIDER")
+    ai_model: str = Field("deepseek-coder", env="AI_MODEL")
+    ai_temperature: float = Field(0.1, env="AI_TEMPERATURE")
+    ai_max_tokens: int = Field(4000, env="AI_MAX_TOKENS")
     
     # Configuración de logging
     log_level: str = Field("INFO", env="LOG_LEVEL")

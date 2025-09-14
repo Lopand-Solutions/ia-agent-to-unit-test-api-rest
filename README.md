@@ -84,8 +84,12 @@ ia-agent multi-agent --monitor
 # Copiar archivo de ejemplo
 copy env.example .env
 
-# Configurar API keys
+# Configurar API key de DeepSeek (recomendado)
+DEEPSEEK_API_KEY=tu_api_key_aqui
+
+# O configurar OpenAI como alternativa
 OPENAI_API_KEY=tu_api_key_aqui
+AI_PROVIDER=openai
 ```
 
 ### Archivo de Configuración
@@ -98,8 +102,8 @@ agent:
     storage_path: "./memory"
 
 ai:
-  provider: "openai"
-  model: "gpt-4"
+  provider: "deepseek"
+  model: "deepseek-coder"
   temperature: 0.1
 ```
 

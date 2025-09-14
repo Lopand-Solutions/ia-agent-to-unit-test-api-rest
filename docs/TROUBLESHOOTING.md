@@ -6,39 +6,39 @@
 
 #### Síntomas
 ```
-OPENAI_API_KEY no configurado. Funcionalidad de IA limitada.
 DEEPSEEK_API_KEY no configurado. Funcionalidad de IA limitada.
+OPENAI_API_KEY no configurado. Funcionalidad de IA limitada.
 ```
 
-#### Solución para OpenAI
-```bash
-# Configurar variable de entorno
-export OPENAI_API_KEY="tu_api_key_aqui"
-
-# O en archivo .env
-echo "OPENAI_API_KEY=tu_api_key_aqui" >> .env
-```
-
-#### Solución para DeepSeek
+#### Solución para DeepSeek (Recomendado)
 ```bash
 # Configurar variable de entorno
 export DEEPSEEK_API_KEY="tu_api_key_aqui"
-export AI_PROVIDER="deepseek"
-export AI_MODEL="deepseek-coder"
 
 # O en archivo .env
 echo "DEEPSEEK_API_KEY=tu_api_key_aqui" >> .env
-echo "AI_PROVIDER=deepseek" >> .env
-echo "AI_MODEL=deepseek-coder" >> .env
+```
+
+#### Solución para OpenAI (Alternativa)
+```bash
+# Configurar variable de entorno
+export OPENAI_API_KEY="tu_api_key_aqui"
+export AI_PROVIDER="openai"
+export AI_MODEL="gpt-4"
+
+# O en archivo .env
+echo "OPENAI_API_KEY=tu_api_key_aqui" >> .env
+echo "AI_PROVIDER=openai" >> .env
+echo "AI_MODEL=gpt-4" >> .env
 ```
 
 #### Verificación
 ```bash
-# Para OpenAI
-python -c "import os; print('OpenAI API Key:', bool(os.getenv('OPENAI_API_KEY')))"
-
-# Para DeepSeek
+# Para DeepSeek (por defecto)
 python -c "import os; print('DeepSeek API Key:', bool(os.getenv('DEEPSEEK_API_KEY')))"
+
+# Para OpenAI (alternativa)
+python -c "import os; print('OpenAI API Key:', bool(os.getenv('OPENAI_API_KEY')))"
 ```
 
 ### 2. Error de .NET
