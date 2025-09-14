@@ -1,0 +1,161 @@
+# Configuración por defecto para agentes individuales
+# IA Agent para Generación de Pruebas Unitarias .NET
+
+# =============================================================================
+# CONFIGURACIÓN GENERAL DEL AGENTE
+# =============================================================================
+agent:
+  name: "IA Agent Unit Tests"
+  version: "1.0.0"
+  mode: "single-agent"  # single-agent, multi-agent
+  debug: false
+  log_level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+
+# =============================================================================
+# CONFIGURACIÓN DE IA
+# =============================================================================
+ai:
+  provider: "openai"  # openai, azure, anthropic, local
+  model: "gpt-4"
+  temperature: 0.1
+  max_tokens: 4000
+  timeout: 30
+  
+  # Configuración específica por proveedor
+  openai:
+    api_key: null  # Se configura via CLI o .env
+    organization: null
+    
+  azure:
+    endpoint: null
+    api_key: null
+    api_version: "2024-02-15-preview"
+    
+  anthropic:
+    api_key: null
+    model: "claude-3-sonnet-20240229"
+
+# =============================================================================
+# CONFIGURACIÓN DE MEMORIA
+# =============================================================================
+memory:
+  type: "persistent"  # session, persistent
+  storage_path: "./memory"
+  
+  # Memoria individual por agente
+  individual:
+    buffer_size: 1000
+    summary_threshold: 50
+    vector_store: "chroma"  # chroma, faiss
+    
+  # Memoria compartida (para multi-agente)
+  shared:
+    enabled: false
+    storage_path: "./memory/shared"
+    sync_interval: 60  # segundos
+
+# =============================================================================
+# CONFIGURACIÓN DE TESTING
+# =============================================================================
+testing:
+  framework: "xunit"  # xunit, nunit, mstest
+  auto_detect: true
+  
+  # Patrones de código soportados
+  patterns:
+    - "repository"
+    - "service"
+    - "controller"
+    - "dto"
+    - "entity"
+    
+  # Configuración de cobertura
+  coverage:
+    threshold: 80
+    generate_report: true
+    report_format: "html"  # html, xml, json
+    
+  # Configuración de mocks
+  mocks:
+    framework: "moq"  # moq, nsubstitute, fakeiteasy
+    auto_generate: true
+
+# =============================================================================
+# CONFIGURACIÓN DE GENERACIÓN
+# =============================================================================
+generation:
+  auto_format: true
+  include_comments: true
+  include_using_statements: true
+  
+  # Templates
+  templates:
+    path: "./templates"
+    custom_path: null
+    
+  # Configuración de código generado
+  code_style:
+    indent_size: 4
+    use_tabs: false
+    line_length: 120
+    
+  # Validación automática
+  validation:
+    compile_check: true
+    test_run: true
+    lint_check: true
+
+# =============================================================================
+# CONFIGURACIÓN DE HERRAMIENTAS
+# =============================================================================
+tools:
+  # Herramientas de análisis .NET
+  dotnet:
+    sdk_path: null  # Auto-detect
+    msbuild_path: null  # Auto-detect
+    
+  # Herramientas de búsqueda
+  search:
+    web_search: true
+    documentation_search: true
+    code_search: true
+    
+  # Herramientas de archivos
+  files:
+    auto_backup: true
+    backup_path: "./backups"
+    max_backups: 10
+
+# =============================================================================
+# CONFIGURACIÓN DE LOGGING
+# =============================================================================
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "./logs/agent.log"
+  max_size: "10MB"
+  backup_count: 5
+  
+  # Logging específico por componente
+  components:
+    agent: "INFO"
+    memory: "DEBUG"
+    tools: "INFO"
+    generation: "INFO"
+
+# =============================================================================
+# CONFIGURACIÓN DE PERFORMANCE
+# =============================================================================
+performance:
+  max_concurrent_requests: 5
+  request_timeout: 30
+  retry_attempts: 3
+  retry_delay: 1
+  
+  # Configuración de memoria
+  memory_limit: "2GB"
+  cache_size: "100MB"
+  
+  # Configuración de procesamiento
+  batch_size: 10
+  parallel_processing: true
