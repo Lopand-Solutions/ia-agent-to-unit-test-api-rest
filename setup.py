@@ -24,13 +24,13 @@ if requirements_path.exists():
 
 setup(
     name="ia-agent-dotnet",
-    version="0.5.2",
+    version="0.6.0",
     author="Paulo Andrade",
     author_email="paulo_866@hotmail.com",
     description="IA Agent para Generación de Pruebas Unitarias .NET - Sistema multi-agente inteligente",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/pauloandrade/ia-agent-dotnet",
+    url="https://github.com/Lopand-Solutions/ia-agent-to-unit-test-api-rest",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     classifiers=[
@@ -75,8 +75,8 @@ setup(
         "automation", "code-generation"
     ],
     project_urls={
-        "Bug Reports": "https://github.com/pauloandrade/ia-agent-dotnet/issues",
-        "Source": "https://github.com/pauloandrade/ia-agent-dotnet",
-        "Documentation": "https://github.com/pauloandrade/ia-agent-dotnet/blob/main/docs/USER_GUIDE.md",
+        "Bug Reports": "https://github.com/Lopand-Solutions/ia-agent-to-unit-test-api-rest/issues",
+        "Source": "https://github.com/Lopand-Solutions/ia-agent-to-unit-test-api-rest",
+        "Documentation": "https://github.com/Lopand-Solutions/ia-agent-to-unit-test-api-rest/blob/develop/docs/USER_GUIDE.md",
     },
 )

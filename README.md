@@ -1,11 +1,24 @@
 # IA Agent para Generación de Pruebas Unitarias .NET
 
+[![PyPI version](https://badge.fury.io/py/ia-agent-dotnet.svg)](https://badge.fury.io/py/ia-agent-dotnet)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![.NET 8.0+](https://img.shields.io/badge/.NET-8.0+-purple.svg)](https://dotnet.microsoft.com/download)
-[![LangChain](https://img.shields.io/badge/LangChain-0.1.0+-green.svg)](https://langchain.com/)
-[![AutoGen](https://img.shields.io/badge/AutoGen-0.2.0+-orange.svg)](https://microsoft.github.io/autogen/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Un sistema multi-agente de IA avanzado con capacidades de memoria y herramientas externas (ReAct) especializado en la generación automática de pruebas unitarias para APIs REST desarrolladas en .NET.
+
+## 🚀 Instalación Rápida
+
+```bash
+# Instalar desde PyPI
+pip install ia-agent-dotnet
+
+# Configurar el agente (una sola vez)
+ia-agent-config
+
+# ¡Listo para usar!
+ia-agent --help
+```
 
 ## 🚀 Características Principales
 
@@ -27,110 +40,86 @@ El sistema utiliza **LangChain** para capacidades ReAct individuales y **AutoGen
 - **Agente Optimizador**: Optimiza pruebas y sugiere mejoras
 - **Agente Coordinador**: Coordina tareas y gestiona flujos de trabajo
 
-## 📦 Instalación Rápida
-
-```bash
-# Crear entorno virtual
-python -m venv ia-agent-env
-ia-agent-env\Scripts\activate
-
-# Instalar dependencias
-pip install -r requirements.txt
-
-# Configurar API keys
-ia-agent config --setup
-```
-
-## 🎯 Uso Básico
-
-### Modo Interactivo (Recomendado)
-```bash
-ia-agent interactive
-```
-
-### Comandos Directos
-```bash
-# Generar pruebas para un controlador
-ia-agent generate --controller "UserController" --output "./Tests"
-
-# Analizar cobertura de pruebas
-ia-agent analyze --coverage --report-format html
-
-# Optimizar pruebas existentes
-ia-agent optimize --tests "./Tests" --framework xunit
-```
-
-### Modo Multi-Agente
-```bash
-# Activar colaboración entre agentes
-ia-agent multi-agent --mode collaborative
-
-# Ver colaboración en tiempo real
-ia-agent multi-agent --monitor
-```
-
-## 📋 Requisitos del Sistema
-
-- **Sistema Operativo**: Windows 10/11 (64-bit)
-- **Python**: 3.11 o superior
-- **.NET SDK**: 8.0 o superior
-- **Memoria RAM**: 8GB mínimo, 16GB recomendado
-- **Conexión a Internet**: Para APIs de IA
-
 ## 🔧 Configuración
 
-### Configuración de API Keys
+### Configuración Global (Recomendado)
 ```bash
-# Opción 1: Configuración interactiva (RECOMENDADO)
-ia-agent config
+# Configurar el agente una sola vez
+ia-agent-config
 
-# Opción 2: Configuración manual
-copy env.example .env
-# Editar .env con tu API key
+# Ver configuración actual
+ia-agent-config --status
 ```
 
-**Proveedores disponibles:**
+### Proveedores de IA Disponibles
 - **DeepSeek** (Recomendado) - Especializado en programación, más económico
 - **Gemini** - Google AI, bueno para análisis general  
 - **OpenAI** - Estándar de la industria, más caro
 
-### Archivo de Configuración
-```yaml
-# config/agent_configs/default.yaml
-agent:
-  mode: "multi-agent"
-  memory:
-    type: "persistent"
-    storage_path: "./memory"
+> 💡 **Nota**: La configuración se guarda globalmente y se aplica a todos tus proyectos. No necesitas archivos `.env` en cada proyecto.
 
-ai:
-  provider: "deepseek"
-  model: "deepseek-coder"
-  temperature: 0.1
+## 🎯 Uso Básico
+
+### Comandos Principales
+```bash
+# Ver ayuda del agente
+ia-agent --help
+
+# Analizar un proyecto .NET
+ia-agent --project-path ./mi-proyecto
+
+# Configurar el agente
+ia-agent-config
+
+# Ver estado de configuración
+ia-agent-config --status
 ```
+
+### Ejemplos de Uso
+```bash
+# Analizar proyecto actual
+ia-agent --project-path .
+
+# Analizar proyecto específico
+ia-agent --project-path ./src/MyProject
+
+# Ver logs detallados
+ia-agent --project-path ./mi-proyecto --log-level DEBUG
+```
+
+## 📋 Requisitos del Sistema
+
+- **Sistema Operativo**: Windows 10/11 (64-bit), Linux, macOS
+- **Python**: 3.11 o superior
+- **.NET SDK**: 8.0 o superior (para proyectos .NET)
+- **Memoria RAM**: 8GB mínimo, 16GB recomendado
+- **Conexión a Internet**: Para APIs de IA
+- **API Key**: DeepSeek, Gemini o OpenAI
 
 ## 📚 Documentación
 
-- [📋 Requisitos Funcionales y Técnicos](docs/requirements.md)
+- [📖 Guía de Usuario](docs/USER_GUIDE.md)
+- [🔧 Guía de Desarrollador](docs/DEVELOPER_GUIDE.md)
+- [🚀 Guía de Despliegue](docs/DEPLOYMENT_GUIDE.md)
 - [🏗️ Arquitectura del Sistema](docs/architecture.md)
-- [📖 Guía de Instalación y Uso](plan.MD#guía-de-instalación-y-uso-para-desarrolladores)
-- [🎯 Plan de Desarrollo Completo](plan.MD)
+- [🔍 Referencia de API](docs/API_REFERENCE.md)
+- [❓ Solución de Problemas](docs/TROUBLESHOOTING.md)
 
 ## 🛠️ Desarrollo
 
-### Estructura del Proyecto
-```
-ia-agent-unit-tests/
-├── src/
-│   ├── agents/                 # Agentes especializados
-│   ├── multi_agent/            # Sistema multi-agente
-│   ├── langchain_agents/       # Agentes individuales
-│   ├── tools/                  # Herramientas del agente
-│   └── cli/                    # Interfaz CLI
-├── templates/                  # Templates de pruebas
-├── memory/                     # Almacenamiento de memoria
-├── config/                     # Configuraciones
-└── docs/                       # Documentación
+### Instalación para Desarrollo
+```bash
+# Clonar el repositorio
+git clone https://github.com/Lopand-Solutions/ia-agent-to-unit-test-api-rest.git
+cd ia-agent-to-unit-test-api-rest
+
+# Crear entorno virtual
+python -m venv venv
+venv\Scripts\activate  # Windows
+# source venv/bin/activate  # Linux/Mac
+
+# Instalar en modo desarrollo
+pip install -e .
 ```
 
 ### Contribuir
@@ -184,18 +173,18 @@ ia-agent-unit-tests/
 - [x] Changelog del proyecto
 - [x] Licencia MIT
 
-### 🎯 Versión Actual: v0.4.0
-- **Estado**: ✅ **COMPLETADO Y LISTO PARA PRODUCCIÓN**
-- **Funcionalidades**: 25+ características principales
-- **Tests**: 100% de componentes cubiertos
-- **Documentación**: 5 guías completas
-- **Despliegue**: Docker y scripts automatizados
+### 🎯 Versión Actual: v0.6.0
+- **Estado**: ✅ **DISPONIBLE EN PyPI**
+- **Funcionalidades**: Sistema multi-agente con configuración global
+- **Configuración**: Global y automática (sin archivos .env)
+- **Proveedores**: DeepSeek, Gemini, OpenAI
+- **Documentación**: Guías completas y API reference
 
 ## 🤝 Soporte
 
-- **GitHub Issues**: Para reportar bugs y solicitar features
-- **Documentación**: Wiki completa con ejemplos
-- **Email**: soporte@ia-agent.com
+- **GitHub Issues**: [Reportar bugs y solicitar features](https://github.com/Lopand-Solutions/ia-agent-to-unit-test-api-rest/issues)
+- **Documentación**: Guías completas en el directorio `docs/`
+- **PyPI**: [ia-agent-dotnet](https://pypi.org/project/ia-agent-dotnet/)
 
 ## 📄 Licencia
 
@@ -205,9 +194,14 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para
 
 - [LangChain](https://langchain.com/) - Framework para agentes con capacidades ReAct
 - [AutoGen](https://microsoft.github.io/autogen/) - Framework para colaboración multi-agente
+- [DeepSeek](https://platform.deepseek.com/) - IA especializada en programación
+- [Google Gemini](https://makersuite.google.com/) - Google AI para análisis general
 - [OpenAI](https://openai.com/) - APIs de IA para generación de código
 - Comunidad .NET por las mejores prácticas de testing
 
 ---
 
 **Desarrollado con ❤️ para la comunidad .NET**
+
+[![PyPI version](https://badge.fury.io/py/ia-agent-dotnet.svg)](https://badge.fury.io/py/ia-agent-dotnet)
+[![GitHub](https://img.shields.io/github/stars/Lopand-Solutions/ia-agent-to-unit-test-api-rest?style=social)](https://github.com/Lopand-Solutions/ia-agent-to-unit-test-api-rest)

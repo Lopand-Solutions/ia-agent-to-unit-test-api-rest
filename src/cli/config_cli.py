@@ -15,6 +15,7 @@ from rich.table import Table
 from rich.text import Text
 
 from utils.logging import get_logger
+from config.global_config import global_config_manager, GlobalConfig
 
 console = Console()
 logger = get_logger("config-cli")
@@ -24,7 +25,7 @@ class ConfigCLI:
     """CLI para configuración de API keys y proveedores"""
     
     def __init__(self):
-        self.config_file = Path(".env")
+        self.config_manager = global_config_manager
         self.providers = {
             "1": {
                 "name": "DeepSeek",
@@ -94,7 +95,7 @@ class ConfigCLI:
     def get_api_key(self, provider_name: str) -> str:
         """Obtener API key del usuario"""
         console.print(f"\n🔑 Configuración de API Key para {provider_name}")
-        console.print("💡 Tu API key se guardará localmente en el archivo .env")
+        console.print("💡 Tu API key se guardará globalmente para todos tus proyectos")
         
         while True:
             api_key = Prompt.ask(
@@ -124,59 +125,23 @@ class ConfigCLI:
         console.print(Panel(info_text, title=f"📋 Información de {provider['name']}", border_style="green"))
     
     def save_config(self, provider_id: str, api_key: str):
-        """Guardar configuración en archivo .env"""
+        """Guardar configuración globalmente"""
         provider = self.providers[provider_id]
         
-        # Leer configuración existente
-        existing_config = {}
-        if self.config_file.exists():
-            with open(self.config_file, 'r', encoding='utf-8') as f:
-                for line in f:
-                    line = line.strip()
-                    if line and not line.startswith('#') and '=' in line:
-                        key, value = line.split('=', 1)
-                        existing_config[key] = value
+        # Actualizar configuración global
+        success = self.config_manager.update_config(
+            **{provider["key"].lower(): api_key},
+            ai_provider=provider["name"].lower(),
+            ai_model=provider["model"],
+            ai_temperature=0.1,
+            ai_max_tokens=4000
+        )
         
-        # Actualizar configuración
-        existing_config[provider["key"]] = api_key
-        existing_config["AI_PROVIDER"] = provider["name"].lower()
-        existing_config["AI_MODEL"] = provider["model"]
-        existing_config["AI_TEMPERATURE"] = "0.1"
-        existing_config["AI_MAX_TOKENS"] = "4000"
-        
-        # Escribir archivo .env
-        with open(self.config_file, 'w', encoding='utf-8') as f:
-            f.write("# Configuración de IA Agent\n")
-            f.write("# Generado automáticamente por el CLI de configuración\n\n")
-            
-            f.write("# Configuración de IA\n")
-            f.write(f"{provider['key']}={api_key}\n")
-            f.write(f"AI_PROVIDER={provider['name'].lower()}\n")
-            f.write(f"AI_MODEL={provider['model']}\n")
-            f.write(f"AI_TEMPERATURE=0.1\n")
-            f.write(f"AI_MAX_TOKENS=4000\n\n")
-            
-            f.write("# Configuración de logging\n")
-            f.write("LOG_LEVEL=INFO\n")
-            f.write("LOG_FILE=./logs/ia_agent.log\n\n")
-            
-            f.write("# Configuración de memoria\n")
-            f.write("MEMORY_CACHE_SIZE=1000\n")
-            f.write("CHROMADB_PERSIST_DIRECTORY=./memory/vector\n\n")
-            
-            f.write("# Configuración de agentes\n")
-            f.write("MAX_CONCURRENT_AGENTS=3\n")
-            f.write("AGENT_TIMEOUT=60\n\n")
-            
-            f.write("# Configuración de archivos\n")
-            f.write("TEMP_DIRECTORY=./temp\n")
-            f.write("OUTPUT_DIRECTORY=./output\n")
-            f.write("ALLOWED_FILE_EXTENSIONS=.cs,.csproj,.sln\n\n")
-            
-            f.write("# Configuración de .NET\n")
-            f.write("DOTNET_PATH=dotnet\n")
-        
-        console.print(f"✅ Configuración guardada en {self.config_file}", style="green")
+        if success:
+            config_info = self.config_manager.get_config_info()
+            console.print(f"✅ Configuración guardada globalmente en: {config_info['config_file']}", style="green")
+        else:
+            console.print("❌ Error al guardar configuración global", style="red")
     
     def test_configuration(self, provider_id: str, api_key: str) -> bool:
         """Probar la configuración"""
@@ -222,12 +187,32 @@ class ConfigCLI:
         success_text.append(f"{provider_name}\n", style="cyan")
         success_text.append("Estado: ", style="bold")
         success_text.append("✅ Configurado y funcionando\n\n", style="green")
-        success_text.append("Ahora puedes usar el sistema:\n", style="bold")
+        success_text.append("Ahora puedes usar el sistema en cualquier proyecto:\n", style="bold")
         success_text.append("• ia-agent --help\n", style="blue")
         success_text.append("• ia-agent analyze --project ./mi-proyecto\n", style="blue")
-        success_text.append("• ia-agent generate --file ./Controllers/UserController.cs", style="blue")
+        success_text.append("• ia-agent generate --file ./Controllers/UserController.cs\n\n", style="blue")
+        success_text.append("💡 La configuración es global y se aplica a todos tus proyectos", style="yellow")
         
         console.print(Panel(success_text, title="✅ Configuración Exitosa", border_style="green"))
+    
+    def show_current_config(self):
+        """Mostrar configuración actual"""
+        config_info = self.config_manager.get_config_info()
+        
+        config_text = Text()
+        config_text.append("📊 ", style="bold blue")
+        config_text.append("Configuración Actual de IA Agent\n\n", style="bold blue")
+        config_text.append("Archivo de configuración: ", style="bold")
+        config_text.append(f"{config_info['config_file']}\n", style="cyan")
+        config_text.append("Proveedor: ", style="bold")
+        config_text.append(f"{config_info['ai_provider']}\n", style="green")
+        config_text.append("Modelo: ", style="bold")
+        config_text.append(f"{config_info['ai_model']}\n", style="green")
+        config_text.append("Estado: ", style="bold")
+        config_text.append("✅ Configurado\n" if config_info['is_configured'] else "❌ No configurado\n", 
+                          style="green" if config_info['is_configured'] else "red")
+        
+        console.print(Panel(config_text, title="🔧 Configuración Actual", border_style="blue"))
     
     def run(self):
         """Ejecutar CLI de configuración"""
@@ -235,9 +220,11 @@ class ConfigCLI:
             self.show_welcome()
             self.show_providers()
             
-            # Verificar si ya existe configuración
-            if self.config_file.exists():
-                if not Confirm.ask("Ya existe un archivo .env. ¿Deseas reconfigurar?"):
+            # Verificar si ya existe configuración global
+            if self.config_manager.is_configured():
+                config_info = self.config_manager.get_config_info()
+                console.print(f"Ya existe configuración global para {config_info['ai_provider']}")
+                if not Confirm.ask("¿Deseas reconfigurar?"):
                     console.print("Configuración cancelada.", style="yellow")
                     return
             
@@ -276,7 +263,28 @@ class ConfigCLI:
 
 def main():
     """Función principal"""
+    import sys
+    
     cli = ConfigCLI()
+    
+    # Verificar argumentos de línea de comandos
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "--status" or sys.argv[1] == "-s":
+            cli.show_current_config()
+            return
+        elif sys.argv[1] == "--help" or sys.argv[1] == "-h":
+            help_text = Text()
+            help_text.append("🔧 ", style="bold blue")
+            help_text.append("IA Agent - Configuración\n\n", style="bold blue")
+            help_text.append("Uso:\n", style="bold")
+            help_text.append("  ia-agent-config          Configurar el agente interactivamente\n", style="white")
+            help_text.append("  ia-agent-config --status Mostrar configuración actual\n", style="white")
+            help_text.append("  ia-agent-config --help   Mostrar esta ayuda\n\n", style="white")
+            help_text.append("La configuración se guarda globalmente y se aplica a todos tus proyectos.", style="yellow")
+            console.print(Panel(help_text, title="Ayuda", border_style="blue"))
+            return
+    
+    # Ejecutar configuración interactiva
     cli.run()
 
 

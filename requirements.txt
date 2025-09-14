@@ -13,7 +13,6 @@ pyautogen>=0.2.0
 # MODELOS DE IA Y LLM
 # =============================================================================
 openai>=1.3.0
-azure-openai>=1.0.0
 anthropic>=0.7.0
 google-generativeai>=0.3.0
 

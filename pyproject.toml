@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ia-agent-dotnet"
-version = "0.5.2"
+version = "0.6.0"
 authors = [
     {name = "Paulo Andrade", email = "paulo_866@hotmail.com"},
 ]
@@ -34,7 +34,6 @@ dependencies = [
     "langchain-community>=0.0.10",
     "pyautogen>=0.2.0",
     "openai>=1.3.0",
-    "azure-openai>=1.0.0",
     "anthropic>=0.7.0",
     "google-generativeai>=0.3.0",
     "chromadb>=0.4.0",
@@ -71,10 +70,10 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/pauloandrade/ia-agent-dotnet"
-Repository = "https://github.com/pauloandrade/ia-agent-dotnet"
-Documentation = "https://github.com/pauloandrade/ia-agent-dotnet/blob/main/docs/USER_GUIDE.md"
-"Bug Tracker" = "https://github.com/pauloandrade/ia-agent-dotnet/issues"
+Homepage = "https://github.com/Lopand-Solutions/ia-agent-to-unit-test-api-rest"
+Repository = "https://github.com/Lopand-Solutions/ia-agent-to-unit-test-api-rest"
+Documentation = "https://github.com/Lopand-Solutions/ia-agent-to-unit-test-api-rest/blob/develop/docs/USER_GUIDE.md"
+"Bug Tracker" = "https://github.com/Lopand-Solutions/ia-agent-to-unit-test-api-rest/issues"
 
 [project.scripts]
 ia-agent = "cli.simple_cli:main"

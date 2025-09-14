@@ -11,6 +11,8 @@ from typing import Optional, Dict, Any
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
+from .global_config import global_config_manager
+
 
 class EnvironmentConfig(BaseSettings):
     """Configuración de entorno del sistema"""
@@ -66,10 +68,32 @@ class EnvironmentManager:
     """Manager para configuración de entorno"""
     
     def __init__(self):
-        self.config = EnvironmentConfig()
         self.logger = logging.getLogger(__name__)
+        self._load_config()
         self._setup_directories()
         self._validate_config()
+    
+    def _load_config(self):
+        """Cargar configuración desde global y local"""
+        # Primero cargar configuración local (archivo .env si existe)
+        self.config = EnvironmentConfig()
+        
+        # Luego sobrescribir con configuración global si está disponible
+        global_config = global_config_manager.get_config()
+        
+        # Actualizar con valores globales si no están definidos localmente
+        if not self.config.openai_api_key and global_config.openai_api_key:
+            self.config.openai_api_key = global_config.openai_api_key
+        if not self.config.deepseek_api_key and global_config.deepseek_api_key:
+            self.config.deepseek_api_key = global_config.deepseek_api_key
+        if not self.config.gemini_api_key and global_config.gemini_api_key:
+            self.config.gemini_api_key = global_config.gemini_api_key
+        
+        # Usar configuración global para otros valores si no están definidos localmente
+        if self.config.ai_provider == "deepseek" and global_config.ai_provider:
+            self.config.ai_provider = global_config.ai_provider
+        if self.config.ai_model == "deepseek-coder" and global_config.ai_model:
+            self.config.ai_model = global_config.ai_model
     
     def _setup_directories(self):
         """Crear directorios necesarios"""
