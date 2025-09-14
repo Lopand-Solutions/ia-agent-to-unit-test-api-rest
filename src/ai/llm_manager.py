@@ -11,9 +11,69 @@ from dataclasses import dataclass
 from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
 from langchain_community.llms import AzureOpenAI
+from openai import OpenAI
 
 from utils.logging import get_logger
 from utils.config import get_config
+
+
+class DeepSeekLLM:
+    """Wrapper para DeepSeek usando OpenAI API compatible"""
+    
+    def __init__(self, api_key: str, model: str = "deepseek-coder", 
+                 temperature: float = 0.1, max_tokens: int = 4000, timeout: int = 30):
+        self.client = OpenAI(
+            api_key=api_key,
+            base_url="https://api.deepseek.com"
+        )
+        self.model = model
+        self.temperature = temperature
+        self.max_tokens = max_tokens
+        self.timeout = timeout
+    
+    def invoke(self, prompt: str) -> Any:
+        """Invocar modelo de forma síncrona"""
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+                timeout=self.timeout
+            )
+            
+            # Crear objeto similar a LangChain
+            class MockResponse:
+                def __init__(self, content):
+                    self.content = content
+            
+            return MockResponse(response.choices[0].message.content)
+            
+        except Exception as e:
+            logger.error(f"Error en DeepSeek invoke: {e}")
+            raise
+    
+    async def ainvoke(self, prompt: str) -> Any:
+        """Invocar modelo de forma asíncrona"""
+        try:
+            response = await self.client.chat.completions.acreate(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+                timeout=self.timeout
+            )
+            
+            # Crear objeto similar a LangChain
+            class MockResponse:
+                def __init__(self, content):
+                    self.content = content
+            
+            return MockResponse(response.choices[0].message.content)
+            
+        except Exception as e:
+            logger.error(f"Error en DeepSeek ainvoke: {e}")
+            raise
 
 logger = get_logger("llm-manager")
 
@@ -23,6 +83,7 @@ class LLMProvider(Enum):
     OPENAI = "openai"
     AZURE_OPENAI = "azure_openai"
     ANTHROPIC = "anthropic"
+    DEEPSEEK = "deepseek"
 
 
 @dataclass
@@ -50,7 +111,7 @@ class LLMManager:
     def _setup_default_llms(self):
         """Configurar LLMs por defecto"""
         try:
-            # LLM principal (OpenAI)
+            # LLM principal basado en configuración
             if self.config.ai.provider == "openai":
                 self.llms["primary"] = ChatOpenAI(
                     model=self.config.ai.model,
@@ -59,24 +120,89 @@ class LLMManager:
                     timeout=self.config.ai.timeout
                 )
                 self.current_llm = self.llms["primary"]
+                
+            elif self.config.ai.provider == "deepseek":
+                # Verificar si hay API key de DeepSeek
+                deepseek_key = getattr(self.config, 'deepseek_api_key', None)
+                if not deepseek_key:
+                    self.logger.warning("DEEPSEEK_API_KEY no configurado, usando OpenAI como fallback")
+                    # Intentar usar OpenAI como fallback
+                    try:
+                        self.llms["primary"] = ChatOpenAI(
+                            model="gpt-3.5-turbo",
+                            temperature=self.config.ai.temperature,
+                            max_tokens=self.config.ai.max_tokens,
+                            timeout=self.config.ai.timeout
+                        )
+                    except Exception as e:
+                        self.logger.error(f"No se pudo configurar OpenAI como fallback: {e}")
+                        # Crear un LLM mock para evitar errores
+                        self.llms["primary"] = None
+                else:
+                    self.llms["primary"] = DeepSeekLLM(
+                        api_key=deepseek_key,
+                        model=self.config.ai.model,
+                        temperature=self.config.ai.temperature,
+                        max_tokens=self.config.ai.max_tokens,
+                        timeout=self.config.ai.timeout
+                    )
+                self.current_llm = self.llms["primary"]
             
             # LLM de respaldo (más rápido)
-            self.llms["fast"] = ChatOpenAI(
-                model="gpt-3.5-turbo",
-                temperature=0.1,
-                max_tokens=2000,
-                timeout=15
-            )
+            if self.config.ai.provider == "deepseek":
+                # Usar DeepSeek para respaldo también
+                deepseek_key = getattr(self.config, 'deepseek_api_key', None)
+                if deepseek_key:
+                    self.llms["fast"] = DeepSeekLLM(
+                        api_key=deepseek_key,
+                        model="deepseek-chat",
+                        temperature=0.1,
+                        max_tokens=2000,
+                        timeout=15
+                    )
+                else:
+                    self.llms["fast"] = ChatOpenAI(
+                        model="gpt-3.5-turbo",
+                        temperature=0.1,
+                        max_tokens=2000,
+                        timeout=15
+                    )
+            else:
+                self.llms["fast"] = ChatOpenAI(
+                    model="gpt-3.5-turbo",
+                    temperature=0.1,
+                    max_tokens=2000,
+                    timeout=15
+                )
             
             # LLM especializado en código
-            self.llms["code"] = ChatOpenAI(
-                model="gpt-4",
-                temperature=0.05,
-                max_tokens=6000,
-                timeout=45
-            )
+            if self.config.ai.provider == "deepseek":
+                # DeepSeek Coder es excelente para código
+                deepseek_key = getattr(self.config, 'deepseek_api_key', None)
+                if deepseek_key:
+                    self.llms["code"] = DeepSeekLLM(
+                        api_key=deepseek_key,
+                        model="deepseek-coder",
+                        temperature=0.05,
+                        max_tokens=6000,
+                        timeout=45
+                    )
+                else:
+                    self.llms["code"] = ChatOpenAI(
+                        model="gpt-4",
+                        temperature=0.05,
+                        max_tokens=6000,
+                        timeout=45
+                    )
+            else:
+                self.llms["code"] = ChatOpenAI(
+                    model="gpt-4",
+                    temperature=0.05,
+                    max_tokens=6000,
+                    timeout=45
+                )
             
-            self.logger.info("LLMs configurados correctamente")
+            self.logger.info(f"LLMs configurados correctamente con proveedor: {self.config.ai.provider}")
             
         except Exception as e:
             self.logger.error(f"Error al configurar LLMs: {e}")

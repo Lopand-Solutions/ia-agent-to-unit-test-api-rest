@@ -17,6 +17,7 @@ class EnvironmentConfig(BaseSettings):
     
     # Configuración de IA
     openai_api_key: Optional[str] = Field(None, env="OPENAI_API_KEY")
+    deepseek_api_key: Optional[str] = Field(None, env="DEEPSEEK_API_KEY")
     ai_provider: str = Field("openai", env="AI_PROVIDER")
     ai_model: str = Field("gpt-4", env="AI_MODEL")
     ai_temperature: float = Field(0.7, env="AI_TEMPERATURE")
@@ -85,9 +86,11 @@ class EnvironmentManager:
     
     def _validate_config(self):
         """Validar configuración"""
-        # Validar API key si es necesario
+        # Validar API key según el proveedor
         if self.config.ai_provider == "openai" and not self.config.openai_api_key:
             self.logger.warning("OPENAI_API_KEY no configurado. Funcionalidad de IA limitada.")
+        elif self.config.ai_provider == "deepseek" and not self.config.deepseek_api_key:
+            self.logger.warning("DEEPSEEK_API_KEY no configurado. Funcionalidad de IA limitada.")
         
         # Validar extensiones de archivo
         if self.config.allowed_file_extensions:

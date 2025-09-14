@@ -7,9 +7,10 @@
 #### Síntomas
 ```
 OPENAI_API_KEY no configurado. Funcionalidad de IA limitada.
+DEEPSEEK_API_KEY no configurado. Funcionalidad de IA limitada.
 ```
 
-#### Solución
+#### Solución para OpenAI
 ```bash
 # Configurar variable de entorno
 export OPENAI_API_KEY="tu_api_key_aqui"
@@ -18,9 +19,26 @@ export OPENAI_API_KEY="tu_api_key_aqui"
 echo "OPENAI_API_KEY=tu_api_key_aqui" >> .env
 ```
 
+#### Solución para DeepSeek
+```bash
+# Configurar variable de entorno
+export DEEPSEEK_API_KEY="tu_api_key_aqui"
+export AI_PROVIDER="deepseek"
+export AI_MODEL="deepseek-coder"
+
+# O en archivo .env
+echo "DEEPSEEK_API_KEY=tu_api_key_aqui" >> .env
+echo "AI_PROVIDER=deepseek" >> .env
+echo "AI_MODEL=deepseek-coder" >> .env
+```
+
 #### Verificación
 ```bash
-python -c "import os; print('API Key configurada:', bool(os.getenv('OPENAI_API_KEY')))"
+# Para OpenAI
+python -c "import os; print('OpenAI API Key:', bool(os.getenv('OPENAI_API_KEY')))"
+
+# Para DeepSeek
+python -c "import os; print('DeepSeek API Key:', bool(os.getenv('DEEPSEEK_API_KEY')))"
 ```
 
 ### 2. Error de .NET

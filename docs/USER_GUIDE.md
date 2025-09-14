@@ -126,7 +126,8 @@ validate tests/CalculatorTests.cs
 
 | Variable | Descripción | Valor por Defecto |
 |----------|-------------|-------------------|
-| `OPENAI_API_KEY` | Clave API de OpenAI | Requerido |
+| `OPENAI_API_KEY` | Clave API de OpenAI | Requerido para OpenAI |
+| `DEEPSEEK_API_KEY` | Clave API de DeepSeek | Requerido para DeepSeek |
 | `AI_PROVIDER` | Proveedor de IA | `openai` |
 | `AI_MODEL` | Modelo de IA | `gpt-4` |
 | `LOG_LEVEL` | Nivel de logging | `INFO` |
@@ -140,6 +141,33 @@ El sistema busca archivos de configuración en este orden:
 1. Variables de entorno
 2. Archivo `.env`
 3. Valores por defecto
+
+### Configuración para DeepSeek
+
+Para usar DeepSeek en lugar de OpenAI:
+
+```bash
+# Configurar variables de entorno
+export DEEPSEEK_API_KEY="tu_api_key_aqui"
+export AI_PROVIDER="deepseek"
+export AI_MODEL="deepseek-coder"
+
+# O usar archivo .env
+DEEPSEEK_API_KEY=tu_api_key_aqui
+AI_PROVIDER=deepseek
+AI_MODEL=deepseek-coder
+```
+
+**Ventajas de DeepSeek:**
+- ✅ Más económico que OpenAI GPT-4
+- ✅ Especializado en programación
+- ✅ Respuestas rápidas
+- ✅ API compatible con OpenAI
+
+**Modelos disponibles:**
+- `deepseek-chat`: Modelo general de chat
+- `deepseek-coder`: Especializado en programación (recomendado)
+- `deepseek-math`: Especializado en matemáticas
 
 ## 📁 Estructura de Proyectos
 
