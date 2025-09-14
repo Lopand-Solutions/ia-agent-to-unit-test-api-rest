@@ -7,6 +7,7 @@
 #### Síntomas
 ```
 DEEPSEEK_API_KEY no configurado. Funcionalidad de IA limitada.
+GEMINI_API_KEY no configurado. Funcionalidad de IA limitada.
 OPENAI_API_KEY no configurado. Funcionalidad de IA limitada.
 ```
 
@@ -17,6 +18,19 @@ export DEEPSEEK_API_KEY="tu_api_key_aqui"
 
 # O en archivo .env
 echo "DEEPSEEK_API_KEY=tu_api_key_aqui" >> .env
+```
+
+#### Solución para Gemini (Alternativa)
+```bash
+# Configurar variable de entorno
+export GEMINI_API_KEY="tu_api_key_aqui"
+export AI_PROVIDER="gemini"
+export AI_MODEL="gemini-pro"
+
+# O en archivo .env
+echo "GEMINI_API_KEY=tu_api_key_aqui" >> .env
+echo "AI_PROVIDER=gemini" >> .env
+echo "AI_MODEL=gemini-pro" >> .env
 ```
 
 #### Solución para OpenAI (Alternativa)
@@ -36,6 +50,9 @@ echo "AI_MODEL=gpt-4" >> .env
 ```bash
 # Para DeepSeek (por defecto)
 python -c "import os; print('DeepSeek API Key:', bool(os.getenv('DEEPSEEK_API_KEY')))"
+
+# Para Gemini (alternativa)
+python -c "import os; print('Gemini API Key:', bool(os.getenv('GEMINI_API_KEY')))"
 
 # Para OpenAI (alternativa)
 python -c "import os; print('OpenAI API Key:', bool(os.getenv('OPENAI_API_KEY')))"

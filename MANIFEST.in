@@ -1,0 +1,27 @@
+include README.md
+include LICENSE
+include CHANGELOG.md
+include requirements.txt
+include env.example
+include Dockerfile
+include docker-compose.yml
+include deploy.py
+include validate_production.py
+include run_tests.py
+
+recursive-include docs *.md
+recursive-include templates *.cs
+recursive-include examples *.cs
+recursive-include examples *.csproj
+recursive-include examples *.sln
+
+exclude .env
+exclude .env.*
+exclude *.pyc
+exclude __pycache__
+exclude .git*
+exclude .DS_Store
+exclude logs/*
+exclude memory/*
+exclude temp/*
+exclude output/*

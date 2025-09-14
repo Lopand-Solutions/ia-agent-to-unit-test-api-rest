@@ -26,11 +26,14 @@ cd ia-agent-to-unit-tes-api-rest
 pip install -r requirements.txt
 ```
 
-3. **Configurar variables de entorno:**
+3. **Configurar API key:**
 ```bash
+# Opción 1: Configuración interactiva (RECOMENDADO)
+ia-agent config
+
+# Opción 2: Configuración manual
 cp env.example .env
-# Editar .env con tu API key de DeepSeek
-DEEPSEEK_API_KEY=tu_api_key_aqui
+# Editar .env con tu API key
 ```
 
 4. **Verificar instalación:**
@@ -170,9 +173,31 @@ DEEPSEEK_API_KEY=tu_api_key_aqui
 - `deepseek-coder`: Especializado en programación (por defecto)
 - `deepseek-math`: Especializado en matemáticas
 
+### Configuración Alternativa (Gemini)
+
+Para usar Gemini (Google AI):
+
+```bash
+# Configurar variables de entorno
+export GEMINI_API_KEY="tu_api_key_aqui"
+export AI_PROVIDER="gemini"
+export AI_MODEL="gemini-pro"
+
+# O usar archivo .env
+GEMINI_API_KEY=tu_api_key_aqui
+AI_PROVIDER=gemini
+AI_MODEL=gemini-pro
+```
+
+**Ventajas de Gemini:**
+- ✅ Gratuito hasta cierto límite
+- ✅ Bueno para análisis general
+- ✅ Integración con Google AI
+- ✅ Respuestas rápidas
+
 ### Configuración Alternativa (OpenAI)
 
-Para usar OpenAI en lugar de DeepSeek:
+Para usar OpenAI:
 
 ```bash
 # Configurar variables de entorno

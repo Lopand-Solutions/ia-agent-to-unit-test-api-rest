@@ -12,6 +12,7 @@ from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
 from langchain_community.llms import AzureOpenAI
 from openai import OpenAI
+import google.generativeai as genai
 
 from utils.logging import get_logger
 from utils.config import get_config
@@ -75,6 +76,50 @@ class DeepSeekLLM:
             logger.error(f"Error en DeepSeek ainvoke: {e}")
             raise
 
+
+class GeminiLLM:
+    """Wrapper para Gemini usando Google AI"""
+    
+    def __init__(self, api_key: str, model: str = "gemini-pro", 
+                 temperature: float = 0.1, max_tokens: int = 4000, timeout: int = 30):
+        genai.configure(api_key=api_key)
+        self.model = genai.GenerativeModel(model)
+        self.temperature = temperature
+        self.max_tokens = max_tokens
+        self.timeout = timeout
+    
+    def invoke(self, prompt: str) -> Any:
+        """Invocar modelo de forma síncrona"""
+        try:
+            response = self.model.generate_content(
+                prompt,
+                generation_config=genai.types.GenerationConfig(
+                    temperature=self.temperature,
+                    max_output_tokens=self.max_tokens,
+                )
+            )
+            
+            # Crear objeto similar a LangChain
+            class MockResponse:
+                def __init__(self, content):
+                    self.content = content
+            
+            return MockResponse(response.text)
+            
+        except Exception as e:
+            logger.error(f"Error en Gemini invoke: {e}")
+            raise
+    
+    async def ainvoke(self, prompt: str) -> Any:
+        """Invocar modelo de forma asíncrona"""
+        try:
+            # Gemini no tiene soporte asíncrono nativo, usar sync
+            return self.invoke(prompt)
+            
+        except Exception as e:
+            logger.error(f"Error en Gemini ainvoke: {e}")
+            raise
+
 logger = get_logger("llm-manager")
 
 
@@ -84,6 +129,7 @@ class LLMProvider(Enum):
     AZURE_OPENAI = "azure_openai"
     ANTHROPIC = "anthropic"
     DEEPSEEK = "deepseek"
+    GEMINI = "gemini"
 
 
 @dataclass
@@ -141,6 +187,33 @@ class LLMManager:
                 else:
                     self.llms["primary"] = DeepSeekLLM(
                         api_key=deepseek_key,
+                        model=self.config.ai.model,
+                        temperature=self.config.ai.temperature,
+                        max_tokens=self.config.ai.max_tokens,
+                        timeout=self.config.ai.timeout
+                    )
+                self.current_llm = self.llms["primary"]
+                
+            elif self.config.ai.provider == "gemini":
+                # Verificar si hay API key de Gemini
+                gemini_key = getattr(self.config, 'gemini_api_key', None)
+                if not gemini_key:
+                    self.logger.warning("GEMINI_API_KEY no configurado, usando OpenAI como fallback")
+                    # Intentar usar OpenAI como fallback
+                    try:
+                        self.llms["primary"] = ChatOpenAI(
+                            model="gpt-3.5-turbo",
+                            temperature=self.config.ai.temperature,
+                            max_tokens=self.config.ai.max_tokens,
+                            timeout=self.config.ai.timeout
+                        )
+                    except Exception as e:
+                        self.logger.error(f"No se pudo configurar OpenAI como fallback: {e}")
+                        # Crear un LLM mock para evitar errores
+                        self.llms["primary"] = None
+                else:
+                    self.llms["primary"] = GeminiLLM(
+                        api_key=gemini_key,
                         model=self.config.ai.model,
                         temperature=self.config.ai.temperature,
                         max_tokens=self.config.ai.max_tokens,

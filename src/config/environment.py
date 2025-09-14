@@ -18,6 +18,7 @@ class EnvironmentConfig(BaseSettings):
     # Configuración de IA
     openai_api_key: Optional[str] = Field(None, env="OPENAI_API_KEY")
     deepseek_api_key: Optional[str] = Field(None, env="DEEPSEEK_API_KEY")
+    gemini_api_key: Optional[str] = Field(None, env="GEMINI_API_KEY")
     ai_provider: str = Field("deepseek", env="AI_PROVIDER")
     ai_model: str = Field("deepseek-coder", env="AI_MODEL")
     ai_temperature: float = Field(0.1, env="AI_TEMPERATURE")
@@ -91,6 +92,8 @@ class EnvironmentManager:
             self.logger.warning("OPENAI_API_KEY no configurado. Funcionalidad de IA limitada.")
         elif self.config.ai_provider == "deepseek" and not self.config.deepseek_api_key:
             self.logger.warning("DEEPSEEK_API_KEY no configurado. Funcionalidad de IA limitada.")
+        elif self.config.ai_provider == "gemini" and not self.config.gemini_api_key:
+            self.logger.warning("GEMINI_API_KEY no configurado. Funcionalidad de IA limitada.")
         
         # Validar extensiones de archivo
         if self.config.allowed_file_extensions:

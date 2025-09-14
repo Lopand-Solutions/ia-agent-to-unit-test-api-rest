@@ -79,18 +79,20 @@ ia-agent multi-agent --monitor
 
 ## 🔧 Configuración
 
-### Variables de Entorno
+### Configuración de API Keys
 ```bash
-# Copiar archivo de ejemplo
+# Opción 1: Configuración interactiva (RECOMENDADO)
+ia-agent config
+
+# Opción 2: Configuración manual
 copy env.example .env
-
-# Configurar API key de DeepSeek (recomendado)
-DEEPSEEK_API_KEY=tu_api_key_aqui
-
-# O configurar OpenAI como alternativa
-OPENAI_API_KEY=tu_api_key_aqui
-AI_PROVIDER=openai
+# Editar .env con tu API key
 ```
+
+**Proveedores disponibles:**
+- **DeepSeek** (Recomendado) - Especializado en programación, más económico
+- **Gemini** - Google AI, bueno para análisis general  
+- **OpenAI** - Estándar de la industria, más caro
 
 ### Archivo de Configuración
 ```yaml
