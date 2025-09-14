@@ -11,14 +11,14 @@ import json
 from autogen import ConversableAgent, GroupChat, GroupChatManager
 from autogen.agentchat.contrib.multimodal_conversable_agent import MultimodalConversableAgent
 
-from ..agents.analysis_agent import analysis_agent
-from ..agents.generation_agent import generation_agent
-from ..agents.validation_agent import validation_agent
-from ..agents.optimization_agent import optimization_agent
-from ..agents.coordinator_agent import coordinator_agent
-from ..multi_agent.shared_memory import SharedMemory
-from ..utils.config import Config
-from ..utils.logging import get_logger
+from agents.analysis_agent import analysis_agent
+from agents.generation_agent import generation_agent
+from agents.validation_agent import validation_agent
+from agents.optimization_agent import optimization_agent
+from agents.coordinator_agent import coordinator_agent
+from multi_agent.shared_memory import SharedMemory
+from utils.config import Config
+from utils.logging import get_logger
 
 logger = get_logger("autogen-collaboration")
 

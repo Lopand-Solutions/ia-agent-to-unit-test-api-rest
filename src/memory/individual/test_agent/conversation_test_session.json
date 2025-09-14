@@ -1,0 +1,30 @@
+{
+  "context": {
+    "session_id": "test_session",
+    "agent_name": "test_agent",
+    "start_time": "2025-09-14T01:56:37.270379",
+    "last_activity": "2025-09-14T01:56:37.295428",
+    "message_count": 3,
+    "context_data": {}
+  },
+  "history": [
+    {
+      "timestamp": "2025-09-14T01:56:37.270387",
+      "message_type": "system",
+      "content": "Conversación iniciada con test_agent",
+      "metadata": {}
+    },
+    {
+      "timestamp": "2025-09-14T01:56:37.284405",
+      "message_type": "human",
+      "content": "Hola",
+      "metadata": {}
+    },
+    {
+      "timestamp": "2025-09-14T01:56:37.295422",
+      "message_type": "ai",
+      "content": "Hola, soy un agente",
+      "metadata": {}
+    }
+  ]
+}

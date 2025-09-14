@@ -13,8 +13,8 @@ from langchain.memory import ConversationBufferMemory, ConversationSummaryMemory
 from langchain.memory.chat_message_histories import FileChatMessageHistory
 from langchain.schema import BaseMessage, HumanMessage, AIMessage, SystemMessage
 
-from ...utils.helpers import file_helper, json_helper
-from ...utils.logging import get_logger
+from utils.helpers import file_helper, json_helper
+from utils.logging import get_logger
 
 logger = get_logger("conversation-memory")
 
@@ -67,13 +67,14 @@ class ConversationMemory:
                 memory_key="chat_history"
             )
             
-            # Memoria de resumen
-            self.summary_memory = ConversationSummaryMemory(
-                llm=None,  # Se configurará cuando se tenga el LLM
-                chat_memory=FileChatMessageHistory(str(chat_file)),
-                return_messages=True,
-                memory_key="summary_history"
-            )
+            # Memoria de resumen (solo buffer por ahora)
+            # self.summary_memory = ConversationSummaryMemory(
+            #     llm=None,  # Se configurará cuando se tenga el LLM
+            #     chat_memory=FileChatMessageHistory(str(chat_file)),
+            #     return_messages=True,
+            #     memory_key="summary_history"
+            # )
+            self.summary_memory = None  # Se configurará más tarde cuando tengamos LLM
             
             self.logger.info(f"Memoria de LangChain configurada para {self.agent_name}")
             
@@ -153,7 +154,7 @@ class ConversationMemory:
     
     def get_langchain_memory(self, memory_type: str = "buffer") -> Union[ConversationBufferMemory, ConversationSummaryMemory]:
         """Obtener memoria de LangChain"""
-        if memory_type == "summary":
+        if memory_type == "summary" and self.summary_memory is not None:
             return self.summary_memory
         return self.buffer_memory
     
@@ -298,7 +299,7 @@ class ConversationMemory:
             
             # Limpiar memoria de LangChain
             self.buffer_memory.clear()
-            if hasattr(self.summary_memory, 'clear'):
+            if self.summary_memory is not None and hasattr(self.summary_memory, 'clear'):
                 self.summary_memory.clear()
             
             self.logger.info("Memoria limpiada")

@@ -13,8 +13,8 @@ from pathlib import Path
 import chromadb
 from chromadb.config import Settings
 
-from ..utils.helpers import file_helper, json_helper
-from ..utils.logging import get_logger
+from utils.helpers import file_helper, json_helper
+from utils.logging import get_logger
 
 logger = get_logger("shared-memory")
 
@@ -125,15 +125,19 @@ class SharedMemory:
                     # Generar embedding simple (en implementación real usar modelo de embeddings)
                     embedding = self._generate_simple_embedding(content)
                     
+                    # Preparar metadatos
+                    entry_metadata = {
+                        'agent_name': agent_name,
+                        'timestamp': entry.timestamp.isoformat()
+                    }
+                    if metadata:
+                        entry_metadata.update(metadata)
+                    
                     collection.add(
                         ids=[entry_id],
                         documents=[content],
                         embeddings=[embedding],
-                        metadatas=[{
-                            'agent_name': agent_name,
-                            'timestamp': entry.timestamp.isoformat(),
-                            **metadata or {}
-                        }]
+                        metadatas=[entry_metadata]
                     )
                 
                 # Guardar en archivo JSON para persistencia

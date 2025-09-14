@@ -117,9 +117,15 @@ class Config(BaseSettings):
     generation: GenerationConfig = Field(default_factory=GenerationConfig)
     multi_agent: MultiAgentConfig = Field(default_factory=MultiAgentConfig)
     
+    # Campos adicionales para compatibilidad con YAML
+    tools: Optional[Dict[str, Any]] = Field(default=None)
+    logging: Optional[Dict[str, Any]] = Field(default=None)
+    performance: Optional[Dict[str, Any]] = Field(default=None)
+    
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
+        extra = "allow"  # Permitir campos extra
 
 
 class ConfigManager:

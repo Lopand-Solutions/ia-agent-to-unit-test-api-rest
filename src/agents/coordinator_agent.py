@@ -11,12 +11,12 @@ from langchain.agents import Tool, AgentExecutor, create_react_agent
 from langchain.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 
-from .base_agent import ReActAgent, AgentRole, AgentTask, AgentMessage
-from ..langchain_agents.memory.conversation_memory import ConversationMemory
-from ..langchain_agents.memory.vector_memory import VectorMemory
-from ..multi_agent.shared_memory import SharedMemory
-from ..utils.config import Config
-from ..utils.logging import get_logger
+from agents.base_agent import ReActAgent, AgentRole, AgentTask, AgentMessage
+from langchain_agents.memory.conversation_memory import ConversationMemory
+from langchain_agents.memory.vector_memory import VectorMemory
+from multi_agent.shared_memory import SharedMemory
+from utils.config import Config
+from utils.logging import get_logger
 
 logger = get_logger("coordinator-agent")
 

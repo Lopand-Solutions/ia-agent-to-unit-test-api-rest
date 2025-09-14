@@ -11,8 +11,8 @@ from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
 
-from ..utils.helpers import dotnet_helper, file_helper, validation_helper
-from ..utils.logging import get_logger
+from utils.helpers import dotnet_helper, file_helper, validation_helper
+from utils.logging import get_logger
 
 logger = get_logger("dotnet-tools")
 

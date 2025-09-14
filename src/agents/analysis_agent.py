@@ -11,13 +11,13 @@ from langchain.prompts import PromptTemplate
 from langchain.schema import BaseMessage, HumanMessage, AIMessage
 from langchain_openai import ChatOpenAI
 
-from .base_agent import ReActAgent, AgentRole, AgentTask
-from ..tools.dotnet_tools import project_analyzer, controller_analyzer, command_executor
-from ..tools.file_tools import code_file_manager
-from ..langchain_agents.memory.conversation_memory import ConversationMemory
-from ..langchain_agents.memory.vector_memory import VectorMemory
-from ..utils.config import Config
-from ..utils.logging import get_logger
+from agents.base_agent import ReActAgent, AgentRole, AgentTask
+from tools.dotnet_tools import project_analyzer, controller_analyzer, command_executor
+from tools.file_tools import code_file_manager
+from langchain_agents.memory.conversation_memory import ConversationMemory
+from langchain_agents.memory.vector_memory import VectorMemory
+from utils.config import Config
+from utils.logging import get_logger
 
 logger = get_logger("analysis-agent")
 

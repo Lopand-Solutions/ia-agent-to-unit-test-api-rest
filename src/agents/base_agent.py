@@ -10,8 +10,8 @@ from enum import Enum
 import asyncio
 from datetime import datetime
 
-from ..utils.config import Config
-from ..utils.logging import get_logger
+from utils.config import Config
+from utils.logging import get_logger
 
 
 class AgentStatus(Enum):

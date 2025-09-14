@@ -19,15 +19,15 @@ from rich.prompt import Prompt, Confirm
 from rich.syntax import Syntax
 from rich.tree import Tree
 
-from ..agents.analysis_agent import analysis_agent
-from ..agents.generation_agent import generation_agent
-from ..agents.validation_agent import validation_agent
-from ..agents.optimization_agent import optimization_agent
-from ..agents.coordinator_agent import coordinator_agent
-from ..multi_agent.autogen_collaboration import multi_agent_collaboration
-from ..multi_agent.shared_memory import SharedMemory
-from ..utils.config import Config, get_config
-from ..utils.logging import get_logger, setup_logging
+from agents.analysis_agent import analysis_agent
+from agents.generation_agent import generation_agent
+from agents.validation_agent import validation_agent
+from agents.optimization_agent import optimization_agent
+from agents.coordinator_agent import coordinator_agent
+from multi_agent.autogen_collaboration import multi_agent_collaboration
+from multi_agent.shared_memory import SharedMemory
+from utils.config import Config, get_config
+from utils.logging import get_logger, setup_logging
 
 logger = get_logger("multi-agent-cli")
 console = Console()

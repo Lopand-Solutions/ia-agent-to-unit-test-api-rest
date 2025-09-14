@@ -14,8 +14,8 @@ from chromadb.config import Settings
 from sentence_transformers import SentenceTransformer
 import numpy as np
 
-from ...utils.helpers import file_helper, json_helper
-from ...utils.logging import get_logger
+from utils.helpers import file_helper, json_helper
+from utils.logging import get_logger
 
 logger = get_logger("vector-memory")
 
